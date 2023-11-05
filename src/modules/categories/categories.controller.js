@@ -2,7 +2,7 @@ import slugify from 'slugify';
 import cloudinary from '../../services/cloudinary.js';
 import categoryModel from "../../../DB/model/category.model.js";
 export const getCategories=async(req,res)=>{
-    const categories=await categoryModel.find();
+    const categories=await categoryModel.find().populate('subcategory');
     return res.status(200).json({message:"success",categories})
 }
 export const getActiveCategory=async(req,res)=>{
