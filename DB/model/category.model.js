@@ -19,10 +19,10 @@ const categorySchema=new Schema({
         enum:['Active','Inactive'],
     },
   createdBy:{
-    type:Types.ObjectId,ref:'User',
+    type:Types.ObjectId,ref:'User',required:true,
   },
   updatedBy:{
-    type:Types.ObjectId,ref:'User'
+    type:Types.ObjectId,ref:'User',required:true,
   },
 
 },

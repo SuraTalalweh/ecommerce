@@ -17,6 +17,7 @@ const userSchema=new Schema({
     },
     image:{
         type:Object,
+        required:true,
     },
     phone:{
         type:String,
@@ -42,6 +43,10 @@ const userSchema=new Schema({
         default:'User',
         enum:['User','Admin']
     },
+    sendCode:{
+        type:String,
+        default:null,
+    }
 
 },
 {
