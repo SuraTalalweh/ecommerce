@@ -5,15 +5,15 @@ export async function sendEmail(to,subject,html){
         // secure:false,
         // port:25,
         auth:{
-            user: "tariqshreem00@gmail.com",
-            pass: "dcgo lpvp opgn ezdh",
+            user:process.env.EMAILSENDER,
+            pass:process.env.PASSWORDSENDER,
         },
         tls:{
             rejectUnauthorized:false
         }
     });
     const info=await transporter.sendMail({
-        from: '"Fred Foo 👻"<tariqshreem00@gmail.com>',//**** */
+        from: `"T-Shop"<${process.env.EMAILSENDER}>`,//**** */
         to,
         subject,
         html,

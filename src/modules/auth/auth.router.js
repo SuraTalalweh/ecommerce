@@ -5,5 +5,6 @@ const router=Router();
 router.post('/signup',fileUpload(fileValidation.image).single('image'),AuthController.signUp);
 router.post('/signin',AuthController.signIn);
 router.get('/confirmEmail/:token',AuthController.confirmEmail);
-// router.patch('/sendCode')
+router.patch('/sendCode',AuthController.sendCode);
+router.patch('/forgetPassword',AuthController.forgotPassword);
 export default router;
