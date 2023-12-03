@@ -14,13 +14,14 @@ export const getActiveCategory=async(req,res)=>{
     }
 }
 export const getSpecificCategory=async(req,res)=>{
+    return res.json("okkk")
     const {id}=req.params;
     const category=await categoryModel.findById(id);
     return res.json({message:"success",category})
     
 }
-export const createCategory=async (req,res)=>{
-    // try{
+export const createCategory=async (req,res,next)=>{
+        // return res.json("hiii")
         const name=req.body.name.toLowerCase();
         if(await categoryModel.findOne({name})){
             return res.status(409).json({message:"category name already exists"})
@@ -31,9 +32,6 @@ export const createCategory=async (req,res)=>{
         const cat=await categoryModel.create({name,slug:slugify(name),image:{secure_url,public_id},
         createdBy:req.user._id,updatedBy:req.user._id});
         return res.status(201).json({message:"success",cat});
-    // }catch(err){
-    //     return res.json(err);
-    // }
     
 }
 export const updateCategory=async(req,res)=>{

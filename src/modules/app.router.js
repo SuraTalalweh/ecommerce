@@ -5,7 +5,7 @@ import subcategoryRouter from './subcategory/subcategory.router.js'
 import authRouter from './auth/auth.router.js';
 import couponRouter from './coupon/coupon.router.js';
 import cartRouter from './cart/cart.router.js';
-import { sendEmail } from '../services/email.js';
+import { globalErrorHandler } from '../services/errorHandling.js';
 const initApp=async(app,express)=>{
     app.use(express.json());
     connectDB();
@@ -21,5 +21,6 @@ const initApp=async(app,express)=>{
     app.get('*',(req,res)=>{
         return res.status(500).json({message:"page not found"});
     })
+    app.use(globalErrorHandler);
 }
 export default initApp;

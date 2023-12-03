@@ -5,12 +5,11 @@ import cloudinary from "../../services/cloudinary.js";
 import jwt from 'jsonwebtoken';
 import { sendEmail } from "../../services/email.js";
 import { customAlphabet, nanoid } from 'nanoid'; 
-export const signUp=async(req,res)=>{
-   try{
+export const signUp=async(req,res,next)=>{
     const{userName,email,password}=req.body;
     const user =await userModel.findOne({email});
     if(user){
-        return res.status(409).json({message:"email already exists"});
+        return next(new Error("email already exists",{cause:409}));
     }
     const hashedPassword=await bcrypt.hash(password,parseInt(process.env.SALT_ROUND));
     const {secure_url,public_id}=await cloudinary.uploader.upload(req.file.path,{
@@ -243,16 +242,14 @@ CONFIRM YOUR EMAIL
    
     const createUser=await userModel.create({userName,email,password:hashedPassword,image:{secure_url,public_id}});
     return res.status(201).json({message:"sucess",createUser})
-}catch(err){
-  return res.json({message:`hte error is ${err}`});
-}
+
 
 }
- export const confirmEmail =async(req,res)=>{
+ export const confirmEmail =async(req,res,next)=>{
      const token=req.params.token;
      const decoded=jwt.verify(token,process.env.CONFIRMEMAILSECRET);
      if(!decoded){
-         return res.status(404).json({message:"Invalid token"})
+         return next(new Error("invalid token",{cause:404}));
      }
      const user= await userModel.findOneAndUpdate({email:decoded.email,confirmEmail:false},{confirmEmail:true});
      if(!user){
@@ -262,11 +259,14 @@ CONFIRM YOUR EMAIL
     return res.redirect(process.env.LOGINFRONTEND);
     
  }
-export const signIn=async(req,res)=>{
+export const signIn=async(req,res,next)=>{
     const{email,password}=req.body;
     const user = await userModel.findOne({email});
     if(!user){
         return res.status(400).json({message:"data invalid"});
+    }
+    if(!user.confirmEmail){
+      return res.status(400).json({message:"please confirm your email"});
     }
     const match=await bcrypt.compare(password,user.password);
     if(!match){
@@ -279,7 +279,7 @@ export const signIn=async(req,res)=>{
         {expiresIn:60*60*24*30});
     return res.status(200).json({message:"success",token,refreshToken});
 }
-export const sendCode=async (req,res)=>{
+export const sendCode=async (req,res,next)=>{
     const {email}=req.body;
     let code=customAlphabet('1234567890abcdzABCDZ',4)
     code=code();
@@ -289,7 +289,7 @@ export const sendCode=async (req,res)=>{
     return res.redirect(process.env.FORGOTPASSWORDFROM);
     // return res.status(200).json({message:"success",user});
 }
-export const forgotPassword=async(req,res)=>{
+export const forgotPassword=async(req,res,next)=>{
     const {email,password,code}=req.body;
     const user=await userModel.findOne({email});
     if(!user){
@@ -307,4 +307,8 @@ export const forgotPassword=async(req,res)=>{
     await user.save();
     return res.status(200).json({message:"success"});
     }
+export const deleteInvalidConfirm=async (req,res,next)=>{
+  const users=await userModel.deleteMany({confirmEmail:false});
+  return res.status(200).json({message:"sucess"});
+}
     
