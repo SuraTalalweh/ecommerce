@@ -1,3 +1,4 @@
+
 import mongoose,{Schema,model} from 'mongoose';
 const userSchema=new Schema({
     userName:{
@@ -46,7 +47,11 @@ const userSchema=new Schema({
     sendCode:{
         type:String,
         default:null,
+    },
+    changePasswordTime:{
+        type:Date,
     }
+
 },
 {
     timestamps: true,

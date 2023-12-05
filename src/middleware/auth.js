@@ -16,9 +16,12 @@ export const auth=(accessRoles=[])=>{
     if(!decoded){
         res.status(400).json({message:'Token is invalid or invalid authorization'});
     }
-    const user=await userModel.findById(decoded.id).select("userName role");
+    const user=await userModel.findById(decoded.id).select("userName role changePasswordTime");
     if(!user){
         res.status(404).json({message:"not registerd user" });
+    }
+    if(parseInt(user.changePasswordTime?.getTime()/1000)>decoded.iat){
+        return next(new Error(`expired token , plz login`,{cause:400}));//هون بالفرونت بنقله على صفحه اللوج ان
     }
     if(!accessRoles.includes(user.role)){
         res.status(403).json({message:"not auth user"});

@@ -13,7 +13,7 @@ export const createProduct=async(req,res)=>{
         return res.status(404).json({message:" category not found"});
     } 
     req.body.slug=slugify(name);
-    req.body.finalPrice=price*(price*(discount || 0) / 100);
+    req.body.finalPrice=price*(price*(discount || 0) / 100).toFixed(2);
     const {secure_url,public_id}=await cloudinary.uploader.upload(req.files.mainImage[0].path,
         {folser:`${process.env.APP_NAME}/product/${req.body.name}/mainImages`});
         req.body.mainImage={secure_url,public_id}
@@ -30,4 +30,12 @@ export const createProduct=async(req,res)=>{
             return res.status(400).json({message:"errr while creating product"});
         }
         return res.status(201).json({message:"success",product});
+}
+export const getProductWithCategory=async(req,res)=>{
+    const products=await productModel.find({categoryId:req.params.categoryId});
+    return res.status(200).json({message:"success",products});
+}
+export const getProduct=async(req,res)=>{
+    const product=await productModel.findById(req.params.productId);
+    return res.json({message:'success',product});
 }
